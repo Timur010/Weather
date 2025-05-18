@@ -1,10 +1,3 @@
-//
-//  WeatherUITestsLaunchTests.swift
-//  WeatherUITests
-//
-//  Created by Timur Kadiev on 14.05.2025.
-//
-
 import XCTest
 
 final class WeatherUITestsLaunchTests: XCTestCase {

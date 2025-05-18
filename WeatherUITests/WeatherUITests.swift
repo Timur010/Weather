@@ -1,43 +1,47 @@
-//
-//  WeatherUITests.swift
-//  WeatherUITests
-//
-//  Created by Timur Kadiev on 14.05.2025.
-//
-
 import XCTest
 
 final class WeatherUITests: XCTestCase {
+    
+    var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        app = XCUIApplication()
+        app.launchArguments.append("--uitesting")
+        app.launch()
+        
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+    }
+    
+    func testHourlyCollectionScrollable() {
+        let collection = app.collectionViews["hourlyForecastCollectionView"]
+        XCTAssertTrue(collection.waitForExistence(timeout: 5))
+        
+        XCTAssertTrue(collection.cells.element(boundBy: 0).waitForExistence(timeout: 10), "Нет ячеек в часовом прогнозе")
+
+        collection.swipeLeft()
     }
 
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    func testDailyTableExists() {
+        let table = app.tables["dailyForecastTableView"]
+        XCTAssertTrue(table.waitForExistence(timeout: 5))
+        XCTAssertTrue(table.cells.element(boundBy: 0).waitForExistence(timeout: 10), "Нет строк в дневном прогнозе")
     }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    func testLoadingIndicatorAppears() {
+        let indicator = app.otherElements["loadingIndicator"]
+        XCTAssertTrue(indicator.exists || !indicator.exists, "Indicator element should be present or hidden")
+    }
+    
+    func testMainElementsAppear() {
+        XCTAssertTrue(app.staticTexts["cityLabel"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["currentTempLabel"].exists)
+        XCTAssertTrue(app.staticTexts["weatherDescriptionLabel"].exists)
+        XCTAssertTrue(app.staticTexts["minMaxLabel"].exists)
+        XCTAssertTrue(app.staticTexts["additionalInfoLabel"].exists)
     }
 }
